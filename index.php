@@ -1,16 +1,24 @@
 <?php
 
+const ROOT_DIR = __DIR__;
+
 require __DIR__ . '/vendor/autoload.php';
 
-use Ilex\SwoolePsr7\SwooleResponseConverter;
-use Ilex\SwoolePsr7\SwooleServerRequestConverter;
+use Slim\App;
+use Dotenv\Dotenv;
+use Swoole\Http\Server;
+use Swoole\Http\Request;
+use Swoole\Http\Response;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Slim\App;
-use Swoole\Http\Request;
-use Swoole\Http\Response;
-use Swoole\Http\Server;
+use Ilex\SwoolePsr7\SwooleResponseConverter;
+use Ilex\SwoolePsr7\SwooleServerRequestConverter;
+use MyCode\Http\Controllers\HomeController;
+use MyCode\Http\Middlewares\CheckUsersExistenceMiddleware;
+
+$dotenv = Dotenv::createImmutable(__DIR__);
+$dotenv->load();
 
 $psr17Factory = new Psr17Factory;
 $requestConverter = new SwooleServerRequestConverter(
@@ -18,11 +26,9 @@ $requestConverter = new SwooleServerRequestConverter(
 );
 $app = new App($psr17Factory);
 $app->addRoutingMiddleware();
-$app->get('/', function(RequestInterface $request, ResponseInterface $response, $args){
-    $templates = new League\Plates\Engine(__DIR__ . '/');
-    $response->getBody()->write($templates->render('view1', ['name' => 'Something else!']));
-    return $response;
-});
+$app->get('/', HomeController::class . ':welcome');
+$app->get('/users', HomeController::class . ':showUsers');
+$app->get('/user/{id}', HomeController::class . ':showUser')->add(new CheckUsersExistenceMiddleware);
 
 $server = new Server("0.0.0.0", 8080);
 $server->on("start", function(Server $server) {

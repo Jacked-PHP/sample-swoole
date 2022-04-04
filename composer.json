@@ -3,9 +3,15 @@
         "league/plates": "^3.4",
         "slim/slim": "4.*",
         "ilexn/swoole-convert-psr7": "^0.6.0",
-        "nyholm/psr7": "^1.5"
+        "nyholm/psr7": "^1.5",
+        "vlucas/phpdotenv": "^5.4"
     },
     "require": {
         "swoole/ide-helper": "@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "MyCode\\": "src/"
+        }
     }
 }

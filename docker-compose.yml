@@ -1,0 +1,41 @@
+version: '3.7'
+
+services:
+
+  mysql:
+    image: mysql:5.7.29
+    container_name: local-mysql
+    restart: unless-stopped
+    tty: true
+    expose:
+      - "3306"
+    ports:
+      - "33061:3306"
+    environment:
+      MYSQL_DATABASE: exampledb
+      MYSQL_ROOT_PASSWORD: secret
+    volumes:
+      - ./docker/my.cnf:/etc/mysql/conf.d/wt-my.cnf
+      - ./docker/mysql_data:/var/lib/mysql
+    networks:
+      - local-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: local-phpmyadmin
+    restart: always
+    expose:
+      - "80"
+    ports:
+      - "8003:80"
+    volumes:
+      - ./docker/phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+    networks:
+      - local-network
+
+networks:
+  local-network:
+    driver: bridge
