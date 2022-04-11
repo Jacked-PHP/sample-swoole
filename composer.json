@@ -6,7 +6,7 @@
         "nyholm/psr7": "^1.5",
         "vlucas/phpdotenv": "^5.4"
     },
-    "require": {
+    "require-dev": {
         "swoole/ide-helper": "@dev"
     },
     "autoload": {
