@@ -4,31 +4,65 @@ const ROOT_DIR = __DIR__;
 
 require __DIR__ . '/vendor/autoload.php';
 
+use DI\Container;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
+use MyCode\Http\Middlewares\SessionMiddleware;
 use Slim\App;
 use Dotenv\Dotenv;
+use Slim\Routing\RouteCollectorProxy;
 use Swoole\Http\Server;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Nyholm\Psr7\Factory\Psr17Factory;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use Ilex\SwoolePsr7\SwooleResponseConverter;
 use Ilex\SwoolePsr7\SwooleServerRequestConverter;
 use MyCode\Http\Controllers\HomeController;
 use MyCode\Http\Middlewares\CheckUsersExistenceMiddleware;
 
+// --------------------------------------
+// Environment Variables
+// --------------------------------------
+
 $dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->load();
+
+// --------------------------------------
+// Slim App
+// --------------------------------------
 
 $psr17Factory = new Psr17Factory;
 $requestConverter = new SwooleServerRequestConverter(
     $psr17Factory, $psr17Factory, $psr17Factory, $psr17Factory
 );
-$app = new App($psr17Factory);
+$app = new App($psr17Factory, new Container());
 $app->addRoutingMiddleware();
+$container = $app->getContainer();
+
+// --------------------------------------
+// Container
+// --------------------------------------
+
+$container->set('logger', function() {
+    $logger = new Logger('app');
+    $logger->pushHandler(new StreamHandler(__DIR__ . '/' . $_ENV['LOG_STORAGE'], Logger::DEBUG));
+    return $logger;
+});
+
+// --------------------------------------
+// Routes
+// --------------------------------------
+
 $app->get('/', HomeController::class . ':welcome');
-$app->get('/users', HomeController::class . ':showUsers');
-$app->get('/user/{id}', HomeController::class . ':showUser')->add(new CheckUsersExistenceMiddleware);
+$app->group('/users', function (RouteCollectorProxy $group) {
+    $group->get('', HomeController::class . ':showUsers')->setName('show-users');
+    $group->get('/{id:[0-9]+}', HomeController::class . ':showUser')->add(new 
+        CheckUsersExistenceMiddleware)->setName('show-user');
+})->add(new SessionMiddleware);
+
+// --------------------------------------
+// OpenSwoole
+// --------------------------------------
 
 $server = new Server("0.0.0.0", 8080);
 $server->on("start", function(Server $server) {
