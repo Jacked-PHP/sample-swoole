@@ -7,6 +7,7 @@ require __DIR__ . '/vendor/autoload.php';
 use DI\Container;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use MyCode\Http\Middlewares\AuthorizationMiddleware;
 use MyCode\Http\Middlewares\SessionMiddleware;
 use Slim\App;
 use Dotenv\Dotenv;
@@ -19,6 +20,8 @@ use Ilex\SwoolePsr7\SwooleResponseConverter;
 use Ilex\SwoolePsr7\SwooleServerRequestConverter;
 use MyCode\Http\Controllers\HomeController;
 use MyCode\Http\Middlewares\CheckUsersExistenceMiddleware;
+
+global $app;
 
 // --------------------------------------
 // Environment Variables
@@ -53,11 +56,25 @@ $container->set('logger', function() {
 // Routes
 // --------------------------------------
 
-$app->get('/', HomeController::class . ':welcome');
-$app->group('/users', function (RouteCollectorProxy $group) {
-    $group->get('', HomeController::class . ':showUsers')->setName('show-users');
-    $group->get('/{id:[0-9]+}', HomeController::class . ':showUser')->add(new 
+
+$app->group('', function (RouteCollectorProxy $group) {
+
+    $group->get('/', HomeController::class . ':welcome');
+
+    $group->group('', function (RouteCollectorProxy $group2) {
+        $group2->get('/login', HomeController::class . ':login')->setName('login');
+        $group2->post('/login', HomeController::class . ':loginHandler')->setName('login-handler');
+
+        $group2->post('/logout', HomeController::class . ':logoutHandler')->setName('logout-handler');
+
+        $group2->get('/admin', HomeController::class . ':admin')
+            ->setName('admin');
+    })->add(new AuthorizationMiddleware);
+
+    $group->get('/users', HomeController::class . ':showUsers')->setName('show-users');
+    $group->get('/users/{id:[0-9]+}', HomeController::class . ':showUser')->add(new
         CheckUsersExistenceMiddleware)->setName('show-user');
+
 })->add(new SessionMiddleware);
 
 // --------------------------------------

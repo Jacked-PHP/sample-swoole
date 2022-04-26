@@ -7,5 +7,7 @@
 
 <h1>Hello <?php echo $name; ?></h1>
 
+<div><a href="/login">Login</a></div>
+
 </body>
 </html>
