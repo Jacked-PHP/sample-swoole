@@ -21,22 +21,4 @@ class HomeController
         $response->getBody()->write($templates->render('view1', ['name' => 'Something else!']));
         return $response;
     }
-
-    public function showUsers(RequestInterface $request, ResponseInterface $response, array $args)
-    {
-        $templates = new Engine(ROOT_DIR . '/views');
-        $users = (new User)->getAll();
-        $response->getBody()->write($templates->render('view2', ['users' => $users]));
-        return $response;
-    }
-
-    public function showUser(RequestInterface $request, ResponseInterface $response, array $args)
-    {
-        $this->container->get('logger')->info(json_encode($request->session));
-
-        $templates = new Engine(ROOT_DIR . '/views');
-        $user = (new User)->find($args['id']);
-        $response->getBody()->write($templates->render('view3', ['user' => current($user)]));
-        return $response;
-    }
 }

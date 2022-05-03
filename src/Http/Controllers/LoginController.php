@@ -3,7 +3,7 @@
 namespace MyCode\Http\Controllers;
 
 use League\Plates\Engine;
-use MyCode\DB\User;
+use MyCode\DB\Models\User;
 use MyCode\Services\SessionTable;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -25,11 +25,11 @@ class LoginController
 
         // TODO: validation
 
-        $user = current((new User)->get('email', $data['email']));
+        $user = User::where('email', $data['email'])->first();
 
         // TODO: verify if the user was found
 
-        if (!password_verify($data['password'], $user['password'])) {
+        if (!password_verify($data['password'], $user->password)) {
             $app->getContainer()->get('logger')->info('Wrong password!');
             return $response
                 ->withHeader('Location', '/login?error=Failed to authenticate!')
@@ -39,7 +39,7 @@ class LoginController
         $session_table = SessionTable::getInstance();
         $session_table->set($request->session['id'], [
             'id' => $request->session['id'],
-            'user_id' => $user['id'],
+            'user_id' => $user->id,
         ]);
 
         return $response
