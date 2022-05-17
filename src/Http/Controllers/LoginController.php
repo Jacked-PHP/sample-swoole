@@ -4,6 +4,7 @@ namespace MyCode\Http\Controllers;
 
 use League\Plates\Engine;
 use MyCode\DB\Models\User;
+use MyCode\Services\Events;
 use MyCode\Services\SessionTable;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -30,11 +31,13 @@ class LoginController
         // TODO: verify if the user was found
 
         if (!password_verify($data['password'], $user->password)) {
-            $app->getContainer()->get('logger')->info('Wrong password!');
+            Events::dispatch(LOGIN_FAILED_EVENT, 'Login failed for email: ' . $data['email']);
             return $response
                 ->withHeader('Location', '/login?error=Failed to authenticate!')
                 ->withStatus(302);
         }
+
+        Events::dispatch(LOGIN_EVENT, json_encode(['user_id' => $user->id]));
 
         $session_table = SessionTable::getInstance();
         $session_table->set($request->session['id'], [
@@ -52,6 +55,10 @@ class LoginController
         // TODO: validation
 
         $session_table = SessionTable::getInstance();
+        $session_data = $session_table->get($request->session['id']);
+
+        Events::dispatch(LOGOUT_EVENT, json_encode(['user_id' => $session_data['user_id']]));
+
         $session_table->set($request->session['id'], [
             'id' => $request->session['id'],
         ]);
