@@ -2,14 +2,17 @@
 
 namespace MyCode\Services;
 
+use MyCode\Events\EventInterface;
+use Swoole\Timer;
+
 class Events
 {
     /**
-     * List of events with its callbacks.
+     * List of event listeners with its callbacks.
      *
-     * @var array ['event-key' => callable[]]
+     * @var array [EventInterface::class => callable[]]
      */
-    protected array $events = [];
+    protected array $listeners = [];
 
     protected function __construct()
     {
@@ -26,32 +29,36 @@ class Events
         return $instance;
     }
 
-    public static function addEvent(string $key, callable $callback): void
+    public static function addListener(string $event, callable $callback): void
     {
-        if (!isset(self::getInstance()->events[$key])) {
-            self::getInstance()->events[$key] = [];
+        if (!isset(self::getInstance()->listeners[$event])) {
+            self::getInstance()->listeners[$event] = [];
         }
 
-        self::getInstance()->events[$key][] = $callback;
+        self::getInstance()->listeners[$event][] = $callback;
     }
 
-    public static function getEvents(): array
+    public static function dispatch(EventInterface $event): void
     {
-        return self::getInstance()->events;
+        $listeners = [];
+        if (isset(self::getInstance()->listeners[$event::class])) {
+            $listeners = self::getInstance()->listeners[$event::class];
+        }
+
+        for ($i = 0; $i < count($listeners); $i++) {
+            Timer::after(1, $listeners[$i], $event);
+        }
     }
 
-    public static function dispatch(string $key, string $data): void
+    public static function dispatchNow(EventInterface $event): void
     {
-        global $app;
-        $eventsTable = $app->getContainer()->get('events-table');
-        $eventsTable->set(count($eventsTable), [
-            'event_key' => $key,
-            'event_data' => $data,
-        ]);
-    }
+        $listeners = [];
+        if (isset(self::getInstance()->listeners[$event::class])) {
+            $listeners = self::getInstance()->listeners[$event::class];
+        }
 
-    public static function dispatchNow(): void
-    {
-        // TODO: implement
+        for ($i = 0; $i < count($listeners); $i++) {
+            call_user_func($listeners[$i], $event);
+        }
     }
 }

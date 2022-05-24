@@ -8,6 +8,10 @@ use Ilex\SwoolePsr7\SwooleServerRequestConverter;
 use MyCode\DB\Migration;
 use MyCode\DB\Models\User;
 use MyCode\DB\Seed;
+use MyCode\Events\EventInterface;
+use MyCode\Events\UserLogin;
+use MyCode\Events\UserLoginFail;
+use MyCode\Events\UserLogout;
 use MyCode\Services\Events;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Slim\App as SlimApp;
@@ -23,8 +27,6 @@ class App
     public static function start()
     {
         [$app, $requestConverter] = App::prepareSlimApp();
-
-        include_once ROOT_DIR . '/src/constants.php';
 
         Dependencies::start($app);
         self::registerEvents($app);
@@ -94,21 +96,16 @@ class App
     {
         $container = $app->getContainer();
 
-        Events::addEvent(LOGIN_EVENT, function($data) use ($container) {
-            $parsedData = json_decode($data, true);
-            // TODO: avoid exception if user_id key is not present
-            $user = User::find($parsedData['user_id']);
-            $container->get('logger')->info('User successful login: ' . $user->name);
+        Events::addListener(UserLogin::class, function(EventInterface $event) use ($container) {
+            $container->get('logger')->info('User successful login: ' . $event->user->name);
         });
 
-        Events::addEvent(LOGOUT_EVENT, function($data) use ($container) {
-            $parsedData = json_decode($data, true);
-            $user = User::find($parsedData['user_id']);
-            $container->get('logger')->info('User logout: ' . $user->name);
+        Events::addListener(UserLogout::class, function(EventInterface $event) use ($container) {
+            $container->get('logger')->info('User logout: ' . $event->user->name);
         });
 
-        Events::addEvent(LOGIN_FAILED_EVENT, function($data) use ($container) {
-            $container->get('logger')->info('Login attempt fail: ' . $data);
+        Events::addListener(UserLoginFail::class, function(EventInterface $event) use ($container) {
+            $container->get('logger')->info('Login attempt fail: ' . $event->email);
         });
     }
 }
