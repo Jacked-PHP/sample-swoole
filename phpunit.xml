@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="bootstrap-phpunit.php"
+         colors="true"
+         printerClass="Codedungeon\PHPUnitPrettyResultPrinter\Printer"
+>
+    <testsuites>
+        <testsuite name="feature">
+            <file>tests/ApiUserTest.php</file>
+        </testsuite>
+    </testsuites>
+    <coverage processUncoveredFiles="true">
+        <include>
+            <directory suffix=".php">./src</directory>
+        </include>
+    </coverage>
+</phpunit>

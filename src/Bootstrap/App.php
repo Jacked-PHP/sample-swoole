@@ -15,6 +15,7 @@ use MyCode\Events\UserLogout;
 use MyCode\Services\Events;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Slim\App as SlimApp;
+use Slim\Routing\RouteCollectorProxy;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
@@ -30,14 +31,22 @@ class App
 
         Dependencies::start($app);
         self::registerEvents($app);
-
-        (require ROOT_DIR . '/src/routes.php')($app);
+        self::registerRoutes($app);
 
         if (self::processCommands($app)) {
             return;
         }
 
         SwooleServer::start($app, $requestConverter);
+    }
+
+    public static function registerRoutes(SlimApp $app)
+    {
+        (require ROOT_DIR . '/src/routes.php')($app);
+
+        $app->group('/api', function(RouteCollectorProxy $group) {
+            (require ROOT_DIR . '/src/api-routes.php')($group);
+        });
     }
 
     private static function prepareSlimApp()
@@ -60,7 +69,7 @@ class App
         switch ($input->getArgument('action')) {
 
             case 'migrate':
-                Migration::handle($app, $input);
+                Migration::handle($app, $input->getOption('fresh'));
                 return true;
 
             case 'seed':
