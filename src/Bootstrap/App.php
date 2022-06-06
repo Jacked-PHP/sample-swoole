@@ -3,11 +3,10 @@
 namespace MyCode\Bootstrap;
 
 use DI\Container;
-use Exception;
 use Ilex\SwoolePsr7\SwooleServerRequestConverter;
-use MyCode\DB\Migration;
-use MyCode\DB\Models\User;
-use MyCode\DB\Seed;
+use MyCode\Commands\HttpServer;
+use MyCode\Commands\Migrate;
+use MyCode\Commands\Seed;
 use MyCode\Events\EventInterface;
 use MyCode\Events\UserLogin;
 use MyCode\Events\UserLoginFail;
@@ -16,28 +15,19 @@ use MyCode\Services\Events;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Slim\App as SlimApp;
 use Slim\Routing\RouteCollectorProxy;
-use Symfony\Component\Console\Input\ArgvInput;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputDefinition;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Application;
 
 class App
 {
     public static function start()
     {
-        [$app, $requestConverter] = App::prepareSlimApp();
+        $app = App::prepareSlimApp();
 
         Dependencies::start($app);
         self::registerEvents($app);
         self::registerRoutes($app);
 
-        if (self::processCommands($app)) {
-            return;
-        }
-
-        SwooleServer::start($app, $requestConverter);
+        self::processCommands();
     }
 
     public static function registerRoutes(SlimApp $app)
@@ -49,9 +39,9 @@ class App
         });
     }
 
-    private static function prepareSlimApp()
+    private static function prepareSlimApp(): SlimApp
     {
-        global $app;
+        global $app, $requestConverter;
 
         $psr17Factory = new Psr17Factory;
         $requestConverter = new SwooleServerRequestConverter(
@@ -59,46 +49,18 @@ class App
         );
         $app = new SlimApp($psr17Factory, new Container());
         $app->addRoutingMiddleware();
-        return [$app, $requestConverter];
+        return $app;
     }
 
-    private static function processCommands(SlimApp $app): bool
+    private static function processCommands(): void
     {
-        $input = self::getConsoleInput();
+        $application = new Application();
 
-        switch ($input->getArgument('action')) {
+        $application->add(new HttpServer);
+        $application->add(new Migrate);
+        $application->add(new Seed);
 
-            case 'migrate':
-                Migration::handle($app, $input->getOption('fresh'));
-                return true;
-
-            case 'seed':
-                Seed::handle($app);
-                return true;
-        }
-
-        return false;
-    }
-
-    private static function getConsoleInput(): InputInterface
-    {
-        global $argv;
-
-        $output = new ConsoleOutput;
-
-        $definition = new InputDefinition([
-            new InputArgument('action', InputArgument::OPTIONAL, 'Action to be taken.'),
-            new InputOption('fresh', null, InputOption::VALUE_NONE, 'Make migration running fresh', null),
-        ]);
-
-        try {
-            return new ArgvInput($argv, $definition);
-        } catch (Exception $e) {
-            $output->writeln('');
-            $output->writeln('<error>There was an error while starting application: ' . $e->getMessage() . '</error>');
-            $output->writeln('');
-            exit(1);
-        }
+        $application->run();
     }
 
     private static function registerEvents(SlimApp $app)

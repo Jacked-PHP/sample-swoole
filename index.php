@@ -7,7 +7,7 @@ require __DIR__ . '/vendor/autoload.php';
 use Dotenv\Dotenv;
 use MyCode\Bootstrap\App;
 
-global $app;
+global $app, $requestConverter;
 
 // --------------------------------------
 // Environment Variables
