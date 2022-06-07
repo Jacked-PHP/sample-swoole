@@ -4,6 +4,7 @@ namespace MyCode\Commands;
 
 use Exception;
 use Illuminate\Database\Schema\Blueprint;
+use MyCode\DB\Models\Token;
 use MyCode\DB\Models\User;
 use Slim\App;
 use Symfony\Component\Console\Command\Command;
@@ -36,8 +37,11 @@ class Migrate extends Command
 
         try {
             $this->migrateUsers($input, $io);
+            $this->migrateJwt($input, $io);
         } catch (Exception $e) {
-            $io->error('There was an error while running migrations: ' . $e->getMessage());
+            if (!$input->getOption('quiet')) {
+                $io->error('There was an error while running migrations: ' . $e->getMessage());
+            }
             return Command::FAILURE;
         }
 
@@ -68,9 +72,48 @@ class Migrate extends Command
                 $table->timestamps();
             });
 
-            $io->success('Table created successfully!');
+            if (!$input->getOption('quiet')) {
+                $io->success('Table created successfully!');
+            }
         } else {
-            $io->error('Table already exists!');
+            if (!$input->getOption('quiet')) {
+                $io->error('Table already exists!');
+            }
+        }
+    }
+
+    private function migrateJwt(InputInterface $input, SymfonyStyle $io): void
+    {
+        /** @var App */
+        global $app;
+
+        $fresh = $input->getOption('fresh');
+
+        $token = new Token;
+
+        $db = $app->getContainer()->get('db')->schema();
+
+        if ($db->hasTable($token->getTable()) && $fresh) {
+            $db->drop($token->getTable());
+        }
+
+        if (!$db->hasTable($token->getTable()) || $fresh) {
+            $db->create($token->getTable(), function (Blueprint $table) {
+                $table->increments('id');
+                $table->string('name', 40);
+                $table->foreignId('user_id');
+                $table->dateTime('expire_at')->nullable();
+                $table->string('token', 150);
+                $table->timestamps();
+            });
+
+            if (!$input->getOption('quiet')) {
+                $io->success('Tokens table created successfully!');
+            }
+        } else {
+            if (!$input->getOption('quiet')) {
+                $io->error('Tokens table already exists!');
+            }
         }
     }
 }

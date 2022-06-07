@@ -3,8 +3,6 @@
 namespace MyCode\Http\Controllers;
 
 use League\Plates\Engine;
-use MyCode\DB\User;
-use MyCode\Services\SessionTable;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;

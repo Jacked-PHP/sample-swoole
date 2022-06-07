@@ -4,6 +4,7 @@ namespace MyCode\Bootstrap;
 
 use DI\Container;
 use Ilex\SwoolePsr7\SwooleServerRequestConverter;
+use MyCode\Commands\GenerateJwtToken;
 use MyCode\Commands\HttpServer;
 use MyCode\Commands\Migrate;
 use MyCode\Commands\Seed;
@@ -59,6 +60,7 @@ class App
         $application->add(new HttpServer);
         $application->add(new Migrate);
         $application->add(new Seed);
+        $application->add(new GenerateJwtToken);
 
         $application->run();
     }

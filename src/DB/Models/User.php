@@ -15,4 +15,9 @@ class User extends Model
         'email',
         'password',
     ];
+
+    public function tokens()
+    {
+        return $this->hasMany(Token::class);
+    }
 }

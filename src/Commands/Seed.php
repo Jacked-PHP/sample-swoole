@@ -25,16 +25,18 @@ class Seed extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $this->seedUsers($io);
+            $this->seedUsers($input, $io);
         } catch (Exception $e) {
-            $io->error('There was an error while running seeder: ' . $e->getMessage());
+            if (!$input->getOption('quiet')) {
+                $io->error('There was an error while running seeder: ' . $e->getMessage());
+            }
             return Command::FAILURE;
         }
 
         return Command::SUCCESS;
     }
 
-    private function seedUsers(SymfonyStyle $io)
+    private function seedUsers(InputInterface $input, SymfonyStyle $io)
     {
         // @throws Exception
         $user = User::create([
@@ -47,6 +49,8 @@ class Seed extends Command
             throw new Exception('Failed to insert record!');
         }
 
-        $io->success('Records inserted successfully!');
+        if (!$input->getOption('quiet')) {
+            $io->success('Records inserted successfully!');
+        }
     }
 }
