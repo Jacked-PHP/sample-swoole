@@ -1,5 +1,7 @@
 {
     "require": {
+        "php": "^8.1",
+        "ext-openswoole": "^4.11",
         "league/plates": "^3.4",
         "slim/slim": "4.*",
         "ilexn/swoole-convert-psr7": "^0.6.0",

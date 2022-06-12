@@ -16,7 +16,7 @@ class HomeController
     public function welcome(RequestInterface $request, ResponseInterface $response, $args)
     {
         $templates = new Engine(ROOT_DIR . '/views');
-        $response->getBody()->write($templates->render('view1', ['name' => 'Something else!']));
+        $response->getBody()->write($templates->render('home', ['name' => 'Something else!']));
         return $response;
     }
 }
