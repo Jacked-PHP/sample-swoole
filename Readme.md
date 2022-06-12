@@ -82,9 +82,23 @@ To run this app you'll need the following dependencies:
 - PHP openswoole extension ^4.11 (https://openswoole.com)
 - PHP Composer (https://getcomposer.org)
 
+**Step 1**
+
 ```shell
 composer install
 ```
+
+**Step 2**
+
+This step is to prepare the database. It can be skipped if you already have another DB source available.
+
+```shell
+docker-compose up -d
+```
+
+**Step 3**
+
+Copy the `.env.sample` to `.env` and update the necessary configurations such as the database info, the log storage location and the session key.
 
 ## HTTP Server
 
@@ -97,6 +111,8 @@ php my-app http-sever
 ## Other Commands
 
 ### Migrate
+
+
 
 ```shell
 php my-app migrate
