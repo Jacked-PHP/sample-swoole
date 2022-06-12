@@ -71,6 +71,14 @@ This is an App built on top of [Slim 4](https://www.slimframework.com/).
 │   ├── admin.php
 │   ├── login.php
 │   └── home.php
+├── .env.sample
+├── .env.testing
+├── bootstrap-phpunit.php
+├── composer.json
+├── composer.lock
+├── docker-compose.yml
+├── my-app
+├── phpunit.xml
 └── README.md
 ```
 
