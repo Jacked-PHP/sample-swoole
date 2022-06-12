@@ -12,8 +12,8 @@ This is an App built on top of [Slim 4](https://www.slimframework.com/).
 
 - [File Structure](#file-structure)
 - [Installation](#installation)
-- [HTTP Server](#http-server)
 - [Other Commands](#other-commands)
+  * [HTTP Server](#http-server)
   * [Migrate](#migrate)
   * [Seed](#seed)
   * [Generate JWT Token](#generate-jwt-token)
@@ -126,21 +126,27 @@ php my-code seed
 
 **Step 6**
 
-Start HTTP Server:
+To start HTTP Server:
 
 ```shell
 php my-code http-server
 ```
 
-## HTTP Server
+## Commands
 
-To start the HTTP server, run this command:
+This application executes commands through `my-app` PHP file. To see the full list of commands, run the following:
+
+```shell
+php my-app
+```
+
+### HTTP Server
+
+Start the HTTP server.
 
 ```shell
 php my-app http-sever
 ```
-
-## Other Commands
 
 ### Migrate
 
