@@ -100,6 +100,22 @@ docker-compose up -d
 
 Copy the `.env.sample` to `.env` and update the necessary configurations such as the database info, the log storage location and the session key.
 
+**Step 4**
+
+Run migrations:
+
+```shell
+php my-code migrate
+```
+
+**Step 5**
+
+Run seeds:
+
+```shell
+php my-code seed
+```
+
 ## HTTP Server
 
 To start the HTTP server, run this command:
@@ -112,13 +128,15 @@ php my-app http-sever
 
 ### Migrate
 
-
+Create database tables.
 
 ```shell
 php my-app migrate
 ```
 
 ### Seed
+
+Populate the db.
 
 ```shell
 php my-app seed
