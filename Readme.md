@@ -116,6 +116,14 @@ Run seeds:
 php my-code seed
 ```
 
+**Step 6**
+
+Start HTTP Server:
+
+```shell
+php my-code http-server
+```
+
 ## HTTP Server
 
 To start the HTTP server, run this command:
