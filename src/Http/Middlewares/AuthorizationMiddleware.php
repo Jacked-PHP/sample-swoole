@@ -17,7 +17,7 @@ class AuthorizationMiddleware
         $is_login_route = in_array($route->getName(), ['login', 'login-handler']);
 
         $session_table = SessionTable::getInstance();
-        $session_data = $session_table->get($request->session['id']);
+        $session_data = $session_table->get($request->getAttribute('session')['id']);
 
         if (!$is_login_route && !isset($session_data['user_id'])) {
             return (new Response)

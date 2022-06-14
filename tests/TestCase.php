@@ -7,6 +7,9 @@ use MyCode\Bootstrap\Dependencies;
 use MyCode\Commands\GenerateJwtToken;
 use MyCode\Commands\Migrate;
 use MyCode\Commands\Seed;
+use MyCode\Services\Session;
+use MyCode\Services\SessionTable;
+use Nekofar\Slim\Test\TestResponse;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 use Slim\App;
@@ -14,6 +17,7 @@ use MyCode\Bootstrap\App as BootstrapApp;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Tester\CommandTester;
 
 class TestCase extends BaseTestCase
 {
@@ -44,13 +48,31 @@ class TestCase extends BaseTestCase
         $application->add(new GenerateJwtToken);
     }
 
-    public function runCommand(string $commandName, $args = [])
+    public function runCommand(string $commandName, $args = []): CommandTester
     {
         global $application;
 
         $command = $application->find($commandName);
-        $greetInput = new ArrayInput($args);
-        $output = new ConsoleOutput;
-        $command->run($greetInput, $output);
+        $tester = new CommandTester($command);
+        $tester->execute($args);
+        return $tester;
+    }
+
+    public function getSessionCookieFromResponse(TestResponse $response): array
+    {
+        $cookie = current($response->getHeader('Set-Cookie'));
+        parse_str($cookie, $parsedCookie);
+        $parsedCookie = current(explode(';', current($parsedCookie)));
+        $parsedCookie = Session::parseCookie($parsedCookie);
+        return SessionTable::getInstance()->get($parsedCookie['id']);
+    }
+
+    public function getCookieParams(TestResponse $response): array
+    {
+        $parsedCookie = explode('=', current($response->getHeader('Set-Cookie')));
+        $cookieKey = $parsedCookie[0];
+        unset($parsedCookie[0]);
+        $cookie = current(explode(';', $parsedCookie[1]));
+        return [$cookieKey => $cookie];
     }
 }

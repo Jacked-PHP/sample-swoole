@@ -18,7 +18,7 @@ class Session
 
     public static function addCookiesToResponse(Request $request, ResponseInterface &$response): void
     {
-        $data = $request->session;
+        $data = $request->getAttribute('session');
         $session_data = SessionTable::getInstance()->get($data['id']);
 
         $cookies = [];
@@ -61,7 +61,7 @@ class Session
         return $current_session ?? [];
     }
 
-    private static function parseCookie(string $data)
+    public static function parseCookie(string $data)
     {
         $data = str_replace($_ENV['SESSION_KEY'], '', $data);
         return json_decode(base64_decode($data), true);

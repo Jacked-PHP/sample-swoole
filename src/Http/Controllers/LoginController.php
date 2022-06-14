@@ -42,9 +42,11 @@ class LoginController
 
         Events::dispatch(new UserLogin($user));
 
+        $session = $request->getAttribute('session');
+
         $session_table = SessionTable::getInstance();
-        $session_table->set($request->session['id'], [
-            'id' => $request->session['id'],
+        $session_table->set($session['id'], [
+            'id' => $session['id'],
             'user_id' => $user->id,
         ]);
 
@@ -55,15 +57,15 @@ class LoginController
 
     public function logoutHandler(RequestInterface $request, ResponseInterface $response, $args)
     {
-        // TODO: validation
+        $session = $request->getAttribute('session');
 
         $session_table = SessionTable::getInstance();
-        $session_data = $session_table->get($request->session['id']);
+        $session_data = $session_table->get($session['id']);
 
         Events::dispatch(new UserLogout(User::find($session_data['user_id'])));
 
-        $session_table->set($request->session['id'], [
-            'id' => $request->session['id'],
+        $session_table->set($session['id'], [
+            'id' => $session['id'],
         ]);
 
         return $response

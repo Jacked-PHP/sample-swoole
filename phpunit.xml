@@ -4,8 +4,11 @@
          printerClass="Codedungeon\PHPUnitPrettyResultPrinter\Printer"
 >
     <testsuites>
-        <testsuite name="feature">
-            <file>tests/ApiUserTest.php</file>
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Feature">
+            <directory>tests/Feature</directory>
         </testsuite>
     </testsuites>
     <coverage processUncoveredFiles="true">

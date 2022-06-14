@@ -13,7 +13,7 @@ class AdminController
     public function admin(RequestInterface $request, ResponseInterface $response, $args)
     {
         $session_table = SessionTable::getInstance();
-        $session_data = $session_table->get($request->session['id']);
+        $session_data = $session_table->get($request->getAttribute('session')['id']);
         $user = User::find($session_data['user_id']);
 
         $templates = new Engine(ROOT_DIR . '/views');

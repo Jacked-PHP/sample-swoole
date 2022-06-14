@@ -1,9 +1,10 @@
 <?php
 
-namespace Tests;
+namespace Tests\Feature;
 
 use MyCode\DB\Models\User;
 use Nekofar\Slim\Test\Traits\AppTestTrait;
+use Tests\TestCase;
 
 class ApiUserTest extends TestCase
 {

@@ -12,7 +12,7 @@ class SessionMiddleware
 {
     public function __invoke(ServerRequestInterface $request, RequestHandler $handler)
     {
-        $request->session = Session::startSession($request);
+        $request = $request->withAttribute('session', Session::startSession($request));
         $response = $handler->handle($request);
         Session::addCookiesToResponse($request, $response);
         return $response;
