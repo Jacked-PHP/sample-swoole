@@ -52,20 +52,27 @@ This is an App built on top of [Slim 4](https://www.slimframework.com/).
 │   │   │   ├── AdminController.php
 │   │   │   ├── HomeController.php
 │   │   │   └── LoginController.php
-│   │   └── Middlewares
+│   │   ├── Middlewares
 │   │   │   ├── AuthorizationMiddleware.php
 │   │   │   ├── CheckUsersExistenceMiddleware.php
 │   │   │   ├── JwtAuthMiddleware.php
 │   │   │   └── SessionMiddleware.php
+│   ├── Rules
+│   │   ├── RecordExist.php
+│   │   └── RecordExistValidator.php
 │   ├── Services
 │   │   ├── Events.php
 │   │   ├── JwtToken.php
 │   │   ├── Session.php
-│   │   └── SessionTable.php
+│   │   ├── SessionTable.php
+│   │   └── Validator.php
 │   ├── api-routes.php
 │   └── routes.php
 ├── tests
-│   ├── ApiUserTest.php
+│   ├── Feature
+│   │   └── ApiUserTest.php
+│   ├── Unit
+│   │   └── GenerateTokenCommandTest.php
 │   └── TestCase.php
 ├── views
 │   ├── admin.php
