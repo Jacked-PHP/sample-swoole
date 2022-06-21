@@ -16,7 +16,8 @@
         "php-di/php-di": "^6.3",
         "illuminate/database": "^9.10",
         "symfony/console": "^6.0",
-        "firebase/php-jwt": "^6.2"
+        "firebase/php-jwt": "^6.2",
+        "symfony/validator": "^6.1"
     },
     "require-dev": {
         "swoole/ide-helper": "@dev",
