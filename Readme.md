@@ -70,7 +70,8 @@ This is an App built on top of [Slim 4](https://www.slimframework.com/).
 │   └── routes.php
 ├── tests
 │   ├── Feature
-│   │   └── ApiUserTest.php
+│   │   ├── ApiUserTest.php
+│   │   └── LoginTest.php
 │   ├── Unit
 │   │   └── GenerateTokenCommandTest.php
 │   └── TestCase.php
