@@ -2,15 +2,21 @@
 
 namespace MyCode\Http\Controllers;
 
+use Exception;
 use League\Plates\Engine;
 use MyCode\DB\Models\User;
 use MyCode\Events\UserLogin;
 use MyCode\Events\UserLoginFail;
 use MyCode\Events\UserLogout;
+use MyCode\Rules\RecordExist;
 use MyCode\Services\Events;
 use MyCode\Services\SessionTable;
+use MyCode\Services\Validator;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Type;
 
 class LoginController
 {
@@ -23,15 +29,18 @@ class LoginController
 
     public function loginHandler(RequestInterface $request, ResponseInterface $response, $args)
     {
-        global $app;
-
         $data = $request->getParsedBody();
 
-        // TODO: validation
+        try {
+            /** @throws Exception */
+            $this->validateLoginForm($data);
+        } catch (Exception $e) {
+            return $response
+                ->withHeader('Location', '/login?error=Failed to authenticate!')
+                ->withStatus(302);
+        }
 
         $user = User::where('email', $data['email'])->first();
-
-        // TODO: verify if the user was found
 
         if (!password_verify($data['password'], $user->password)) {
             Events::dispatch(new UserLoginFail($data['email']));
@@ -71,5 +80,32 @@ class LoginController
         return $response
             ->withHeader('Location', '/login')
             ->withStatus(302);
+    }
+
+    /**
+     * @return void
+     * @throws Exception
+     */
+    private function validateLoginForm(array $data): void
+    {
+        /** @throws Exception */
+        Validator::validate($data, [
+            'email' => [
+                new NotBlank(null, 'User email is required!'),
+                new Type('string', 'User email must be a string!'),
+                new Email(null, 'User email must be a valid email!'),
+                new RecordExist(
+                    [
+                        'model' => User::class,
+                        'field' => 'email',
+                    ],
+                    'Email is not registered!'
+                ),
+            ],
+            'password' => [
+                new NotBlank(null, 'Password is required!'),
+                new Type('string', 'Password must be a string!'),
+            ],
+        ]);
     }
 }
