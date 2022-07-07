@@ -3,7 +3,10 @@
 namespace Tests;
 
 use DI\Container;
+use League\Flysystem\Filesystem;
+use Mockery;
 use MyCode\Bootstrap\Dependencies;
+use MyCode\Commands\GenerateFactory;
 use MyCode\Commands\GenerateJwtToken;
 use MyCode\Commands\Migrate;
 use MyCode\Commands\Seed;
@@ -46,6 +49,7 @@ class TestCase extends BaseTestCase
         $application->add(new Migrate);
         $application->add(new Seed);
         $application->add(new GenerateJwtToken);
+        $application->add(new GenerateFactory);
     }
 
     public function runCommand(string $commandName, $args = []): CommandTester
@@ -74,5 +78,16 @@ class TestCase extends BaseTestCase
         unset($parsedCookie[0]);
         $cookie = current(explode(';', $parsedCookie[1]));
         return [$cookieKey => $cookie];
+    }
+
+    public function mockFilesystem()
+    {
+        global $app;
+
+        $container = $app->getContainer();
+
+        $container->set('filesystem', function() {
+            return Mockery::mock(Filesystem::class);
+        });
     }
 }
