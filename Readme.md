@@ -32,11 +32,16 @@ This is an App built on top of [Slim 4](https://www.slimframework.com/).
 │   │   ├── App.php
 │   │   └── Dependencies.php
 │   ├── Commands
+│   │   ├── GenerateFactory.php
 │   │   ├── GenerateJwtToken.php
 │   │   ├── HttpServer.php
 │   │   ├── Migrate.php
 │   │   └── Seed.php
+│   │   └── stubs
+│   │       └── ModelFactory.stub
 │   ├── DB
+│   │   ├── Factories
+│   │   │   └── UserFactory.php
 │   │   └── Models
 │   │       ├── Token.php
 │   │       └── User.php
@@ -62,7 +67,9 @@ This is an App built on top of [Slim 4](https://www.slimframework.com/).
 │   │   └── RecordExistValidator.php
 │   ├── Services
 │   │   ├── Events.php
+│   │   ├── Hash.php
 │   │   ├── JwtToken.php
+│   │   ├── Resource.php
 │   │   ├── Session.php
 │   │   ├── SessionTable.php
 │   │   └── Validator.php
@@ -72,7 +79,10 @@ This is an App built on top of [Slim 4](https://www.slimframework.com/).
 │   ├── Feature
 │   │   ├── ApiUserTest.php
 │   │   └── LoginTest.php
+│   ├── Traits
+│   │   └── SwooleAppTestTrait.php
 │   ├── Unit
+│   │   ├── GenerateFactoryCommandTest.php
 │   │   └── GenerateTokenCommandTest.php
 │   └── TestCase.php
 ├── views
@@ -175,7 +185,13 @@ php my-app seed
 ### Generate JWT Token
 
 ```shell
-php my-app jwt-token:generate
+php my-app generate:jwt-token
+```
+
+### Generate a Model Factory
+
+```shell
+php my-app generate:factory
 ```
 
 ## Tests
@@ -183,3 +199,4 @@ php my-app jwt-token:generate
 ```shell
 ./vendor/bin/phpunit
 ```
+
