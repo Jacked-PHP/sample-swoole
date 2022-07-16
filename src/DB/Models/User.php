@@ -2,10 +2,14 @@
 
 namespace MyCode\DB\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use MyCode\DB\Factories\UserFactory;
 
 class User extends Model
 {
+    use HasFactory;
+
     protected $connection = 'default';
 
     protected $table = 'users';
@@ -15,6 +19,11 @@ class User extends Model
         'email',
         'password',
     ];
+
+    protected static function newFactory()
+    {
+        return new UserFactory();
+    }
 
     public function tokens()
     {

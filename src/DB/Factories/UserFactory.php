@@ -2,6 +2,7 @@
 
 namespace MyCode\DB\Factories;
 
+use Faker\Factory as Faker;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use MyCode\DB\Models\User;
 
@@ -11,6 +12,12 @@ class UserFactory extends Factory
 
     public function definition()
     {
-        return [];
+        $faker = Faker::create();
+
+        return [
+            'name' => $faker->name,
+            'email' => $faker->email,
+            'password' => $faker->password,
+        ];
     }
 }

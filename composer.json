@@ -19,14 +19,16 @@
         "firebase/php-jwt": "^6.2",
         "symfony/validator": "^6.1",
         "league/flysystem": "^3.1",
-        "mustache/mustache": "^2.14"
+        "mustache/mustache": "^2.14",
+        "symfony/password-hasher": "^6.1"
     },
     "require-dev": {
         "swoole/ide-helper": "@dev",
         "nekofar/slim-test": "^2.0",
         "phpunit/phpunit": "^9.5",
         "codedungeon/phpunit-result-printer": "^0.32.0",
-        "mockery/mockery": "^1.5"
+        "mockery/mockery": "^1.5",
+        "fakerphp/faker": "^1.19"
     },
     "autoload": {
         "psr-4": {

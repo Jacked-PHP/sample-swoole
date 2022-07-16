@@ -22,7 +22,7 @@ use Symfony\Component\Validator\Constraints\Type;
 
 class GenerateJwtToken extends Command
 {
-    protected static $defaultName = 'jwt-token:generate';
+    protected static $defaultName = 'generate:jwt-token';
 
     protected static $defaultDescription = 'Generates a JWT Token for a user.';
 
