@@ -8,6 +8,7 @@ use MyCode\DB\Models\User;
 use MyCode\Events\UserLogin;
 use MyCode\Events\UserLoginFail;
 use MyCode\Events\UserLogout;
+use MyCode\Helpers\ArrayHelpers;
 use MyCode\Rules\RecordExist;
 use MyCode\Services\Events;
 use MyCode\Services\SessionTable;
@@ -33,7 +34,7 @@ class LoginController
 
         try {
             /** @throws Exception */
-            $this->validateLoginForm($data);
+            $this->validateLoginForm(ArrayHelpers::only($data, ['email', 'password']));
         } catch (Exception $e) {
             return $response
                 ->withHeader('Location', '/login?error=Failed to authenticate!')
