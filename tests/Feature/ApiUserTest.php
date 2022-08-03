@@ -22,7 +22,7 @@ class ApiUserTest extends TestCase
     {
         $user = User::find(1);
 
-        $this->runCommand('jwt-token:generate', [
+        $this->runCommand('generate:jwt-token', [
             '--name' => 'token-name',
             '--user' => $user->email,
             '--quiet' => null,
