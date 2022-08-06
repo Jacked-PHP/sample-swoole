@@ -104,6 +104,8 @@ class Migrate extends Command
                 $table->foreignId('user_id');
                 $table->dateTime('expire_at')->nullable();
                 $table->string('token', 150);
+                $table->integer('uses')->default(0);
+                $table->integer('use_limit')->default(0);
                 $table->timestamps();
             });
 

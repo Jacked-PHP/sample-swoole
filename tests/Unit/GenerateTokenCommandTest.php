@@ -18,7 +18,7 @@ class GenerateTokenCommandTest extends TestCase
 
     private function generateToken(array $args): CommandTester
     {
-        return $this->runCommand('jwt-token:generate', $args);
+        return $this->runCommand('generate:jwt-token', $args);
     }
 
     public function test_can_generate_token_via_command()

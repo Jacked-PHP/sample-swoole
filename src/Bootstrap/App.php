@@ -9,6 +9,7 @@ use MyCode\Commands\GenerateJwtToken;
 use MyCode\Commands\HttpServer;
 use MyCode\Commands\Migrate;
 use MyCode\Commands\Seed;
+use MyCode\Commands\WebSocketServer;
 use MyCode\Events\EventInterface;
 use MyCode\Events\UserLogin;
 use MyCode\Events\UserLoginFail;
@@ -59,6 +60,7 @@ class App
         $application = new Application();
 
         $application->add(new HttpServer);
+        $application->add(new WebSocketServer);
         $application->add(new Migrate);
         $application->add(new Seed);
         $application->add(new GenerateJwtToken);

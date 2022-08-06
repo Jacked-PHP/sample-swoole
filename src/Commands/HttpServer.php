@@ -48,6 +48,12 @@ class HttpServer extends Command
             $converter->send($psr7Response);
         });
 
+        $server->set([
+            'document_root' => ROOT_DIR . '/public',
+            'enable_static_handler' => true,
+            'static_handler_locations' => ['/js'],
+        ]);
+
         $server->start();
     }
 }

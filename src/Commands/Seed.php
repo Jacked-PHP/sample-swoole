@@ -38,15 +38,23 @@ class Seed extends Command
 
     private function seedUsers(InputInterface $input, SymfonyStyle $io)
     {
+        $users = [];
+
         // @throws Exception
-        $user = User::create([
+        $users[] = User::create([
             'name' => 'Savio',
             'email' => 'savio@example.com',
             'password' => password_hash('secret', PASSWORD_BCRYPT),
         ]);
 
-        if (null === $user) {
-            throw new Exception('Failed to insert record!');
+        $users[] = User::create([
+            'name' => 'Marina',
+            'email' => 'marina@example.com',
+            'password' => password_hash('secret', PASSWORD_BCRYPT),
+        ]);
+
+        if (count($users) !== count(array_filter($users))) {
+            throw new Exception('Failed to insert records!');
         }
 
         if (!$input->getOption('quiet')) {

@@ -35,6 +35,7 @@ class GenerateJwtToken extends Command
                     new InputOption('name', null, InputOption::VALUE_REQUIRED, 'The name of the JWT token.'),
                     new InputOption('user', null, InputOption::VALUE_REQUIRED, 'The email of the user that the JWT Token is for.'),
                     new InputOption('expire', null, InputOption::VALUE_OPTIONAL, 'The number of seconds until the token expiration.'),
+                    new InputOption('useLimit', null, InputOption::VALUE_OPTIONAL, 'The number of times this token can be used.'),
                 ])
             );
     }
@@ -58,37 +59,19 @@ class GenerateJwtToken extends Command
     private function generateToken(InputInterface $input, SymfonyStyle $io): void
     {
         /** @throws Exception */
-        [$name, $userEmail, $expire] = $this->validateInput($input);
+        [$name, $userEmail, $expire, $useLimit] = $this->validateInput($input);
 
         $user = User::where('email', $userEmail)->first();
-        if (null !== $expire) {
-            $expire = Carbon::now()->addSeconds($expire);
-        }
 
-        $payload = [
-            "iat" => Carbon::now()->timestamp,
-            "user_id" => $user->id,
-        ];
-
-        if (null !== $expire) {
-            $payload["exp"] = $expire->timestamp;
-        }
-
-        $token = JWT::encode($payload, $name, JwtToken::HS256_ALGORITHM);
-
-        $tokenRecord = Token::create([
-            'name' => $name,
-            'user_id' => $user->id,
-            'expire_at' => $expire === null ? null : $expire->format('Y-m-d H:i:s'),
-            'token' => $token,
-        ]);
-
-        if (null === $tokenRecord) {
-            throw new Exception('Couldn\'t save token!');
-        }
+        $tokenRecord = JwtToken::create(
+            name: $name,
+            userId: $user->id,
+            expire: $expire,
+            useLimit: $useLimit
+        );
 
         if (!$input->getOption('quiet')) {
-            $io->success('Token successfully generated:' . PHP_EOL . PHP_EOL . $token);
+            $io->success('Token successfully generated:' . PHP_EOL . PHP_EOL . $tokenRecord->token);
         }
     }
 
@@ -102,12 +85,14 @@ class GenerateJwtToken extends Command
         $name = $input->getOption('name');
         $userEmail = $input->getOption('user');
         $expire = $input->getOption('expire');
+        $userLimit = $input->getOption('useLimit');
 
         /** @throws Exception */
         Validator::validate([
             'name' => $name,
             'userEmail' => $userEmail,
             'expire' => $expire,
+            'use_limit' => $userLimit,
         ], [
             'name' => [
                 new NotBlank(null, 'Token name is requred!'),
@@ -126,8 +111,9 @@ class GenerateJwtToken extends Command
                 ),
             ],
             'expire' => [new Type('integer', 'Expire parameter must be an integer!')],
+            'use_limit' => [new Type('integer', 'Use limit parameter must be an integer!')],
         ]);
 
-        return [$name, $userEmail, $expire];
+        return [$name, $userEmail, $expire, $userLimit];
     }
 }
