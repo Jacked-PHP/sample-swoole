@@ -14,6 +14,7 @@ This is an App built on top of [Slim 4](https://www.slimframework.com/).
 - [Installation](#installation)
 - [Other Commands](#other-commands)
   * [HTTP Server](#http-server)
+  * [WebSocket Server](#websocket-server)
   * [Migrate](#migrate)
   * [Seed](#seed)
   * [Generate JWT Token](#generate-jwt-token)
@@ -173,6 +174,20 @@ Start the HTTP server.
 
 ```shell
 php my-app http-sever
+```
+
+### WebSocket Server
+
+Start the WebSocket Server.
+
+```shell
+php my-app ws-server
+```
+
+To start the WebSocket Server with an HTTP requests support on the same server:
+
+```shell
+php my-app ws-server --http
 ```
 
 ### Migrate
