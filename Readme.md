@@ -32,16 +32,17 @@ This is an App built on top of [Slim 4](https://www.slimframework.com/).
 │   │   ├── App.php
 │   │   └── Dependencies.php
 │   ├── Commands
-│   │   ├── GenerateFactory.php
+│   │   ├── GenerateFactory.php
 │   │   ├── GenerateJwtToken.php
 │   │   ├── HttpServer.php
+│   │   ├── WebSocketServer.php
 │   │   ├── Migrate.php
 │   │   └── Seed.php
-│   │   └── stubs
-│   │       └── ModelFactory.stub
+│   │   └── stubs
+│   │       └── ModelFactory.stub
 │   ├── DB
-│   │   ├── Factories
-│   │   │   └── UserFactory.php
+│   │   ├── Factories
+│   │   │   └── UserFactory.php
 │   │   └── Models
 │   │       ├── Token.php
 │   │       └── User.php
@@ -78,9 +79,10 @@ This is an App built on top of [Slim 4](https://www.slimframework.com/).
 ├── tests
 │   ├── Feature
 │   │   ├── ApiUserTest.php
-│   │   └── LoginTest.php
+│   │   ├── LoginTest.php
+│   │   └── TokenTest.php
 │   ├── Traits
-│   │   └── SwooleAppTestTrait.php
+│   │   └── SwooleAppTestTrait.php
 │   ├── Unit
 │   │   ├── GenerateFactoryCommandTest.php
 │   │   └── GenerateTokenCommandTest.php
@@ -89,6 +91,13 @@ This is an App built on top of [Slim 4](https://www.slimframework.com/).
 │   ├── admin.php
 │   ├── login.php
 │   └── home.php
+│   └── partials
+│   │   └── chat.php
+│   └── templates
+│       └── admin.php
+├── public
+│   └── js
+│       └── ws.js
 ├── .env.sample
 ├── .env.testing
 ├── bootstrap-phpunit.php
